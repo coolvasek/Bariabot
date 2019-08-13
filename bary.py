@@ -16,8 +16,6 @@ bot = telebot.TeleBot('729545618:AAGZsGxniK2HBrLtliLzhfwg48GAZgL4b7E')
 def start_message(message):
     bot.send_message(message.chat.id, 'Привет, ты написал мне /start')
 
-@bot.message_handler(content_types=['text', 'photo'])
-
 
 def get_name(message): #получаем фамилию
     global name;
@@ -170,7 +168,9 @@ def  get_question(message):
     msg_id = msg.message_id;
     bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
 
-   def start(message):
+    @bot.message_handler(content_types=['text', 'photo'])
+    
+    def start(message):
     global error_in_input;
     if message.text == '/reg':
         bot.send_message(message.from_user.id, "Как вас зовут? Напишите ФИО");
