@@ -1,4 +1,4 @@
-bary.pyimport telebot
+import telebot
 name = '';
 tel = 0;
 age = 0;
