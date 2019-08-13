@@ -18,25 +18,6 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text', 'photo'])
 
-def start(message):
-    global error_in_input;
-    if message.text == '/reg':
-        bot.send_message(message.from_user.id, "Как вас зовут? Напишите ФИО");
-        error_in_input == 0;
-        bot.register_next_step_handler(message, get_name); #следующий шаг – функция get_name
-
-    elif error_in_input == 1:
-        get_count_room(message);
-    elif error_in_input == 2:
-        bot.send_message(message.from_user.id, "Напишите количество парквочных мест");
-        bot.register_next_step_handler(message, get_parking);
-
-    else:
-        bot.send_message(message.from_user.id, ' Привет! Я бот-помощник по открытию нового магазина!');
-        bot.send_message(message.from_user.id, ' Давайте заполним заявку на открытие магазина. Напишите /reg');
-
-
-
 
 def get_name(message): #получаем фамилию
     global name;
@@ -189,4 +170,22 @@ def  get_question(message):
     msg_id = msg.message_id;
     bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
 
+   def start(message):
+    global error_in_input;
+    if message.text == '/reg':
+        bot.send_message(message.from_user.id, "Как вас зовут? Напишите ФИО");
+        error_in_input == 0;
+        bot.register_next_step_handler(message, get_name); #следующий шаг – функция get_name
+
+    elif error_in_input == 1:
+        get_count_room(message);
+    elif error_in_input == 2:
+        bot.send_message(message.from_user.id, "Напишите количество парквочных мест");
+        bot.register_next_step_handler(message, get_parking);
+
+    else:
+        bot.send_message(message.from_user.id, ' Привет! Я бот-помощник по открытию нового магазина!');
+        bot.send_message(message.from_user.id, ' Давайте заполним заявку на открытие магазина. Напишите /reg'); 
+    
+    
 bot.polling()
