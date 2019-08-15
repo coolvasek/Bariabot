@@ -33,7 +33,7 @@ def get_tel(message):
 
 
 def get_adress(message):
-    shop.adress = message.text;
+    shop.address = message.text;
     #add(message);
     keyboard = telebot.types.InlineKeyboardMarkup()
     global error_in_input;
@@ -60,35 +60,39 @@ def get_adress(message):
             bot.edit_message_reply_markup(message.chat.id, msg_id, reply_markup=keyboard);
         except:
             error = "Ошибка обработки ввода";
+        try:
+            if (c.data in ["Помещение", "Отд. здание"]):
+                shop.type = c.data;
+                bot.send_message(message.chat.id, 'Напишите общую площадь ');
+                bot.register_next_step_handler(message, get_square);
+            elif c.data == "Зем. участок":
+                shop.type = c.data;
+                get_count_room(message);
+            elif (c.data in ["1 зал", "2 зала", "3 зала", "более 3 залов"]):
+                shop.count_room = c.data;
+                bot.send_message(message.chat.id, "Напишите количество парквочных мест");
+                bot.register_next_step_handler(message, get_parking);
+            elif (c.data in ["1 этаж", "2 этаж", "3 этаж"]):
+                shop.floor = c.data;
+                get_height(message);
+            elif (c.data in ["Да", "Нет"]):
+                get_second_floor(message);
+            elif (c.data in ["Да ", "Нет "]):
+                get_count_room(message);
+            elif (c.data in ["Да  ", "Нет  "]):
+                bot.send_message(message.chat.id, "Спасибо!");
+        except:
+            bot.send_message(message.chat.id, "Ошибка обработки");
 
-        if (c.data in ["Помещение","Отд. здание"]):
-            bot.send_message(message.chat.id, 'Напишите общую площадь ');
-            shop.type = message.text;
-            add(message);
-            bot.register_next_step_handler(message, get_square);
-        elif c.data == "Зем. участок":
-            get_count_room(message);
-        elif (c.data in ["1 зал","2 зала","3 зала", "более 3 залов"]):
-            bot.send_message(message.chat.id, "Напишите количество парквочных мест");
-            bot.register_next_step_handler(message, get_parking);
-        elif (c.data in ["1 этаж","2 этаж","3 этаж"]):
-            get_height(message);
-        elif (c.data in ["Да","Нет"]):
-            get_second_floor(message);
-        elif (c.data in ["Да ","Нет "]):
-            get_count_room(message);
-        elif (c.data in ["Да  ","Нет  "]):
-            bot.send_message(message.chat.id, "Спасибо!");
+
 
 def get_square(message):
-    global square;
-    square = message.text;
+    shop.square = message.text;
     bot.send_message(message.chat.id, 'Напишите ТОРГОВУЮ площадь ');
     bot.register_next_step_handler(message, get_square_sell);
 
 def get_square_sell(message):
-    global square_sell;
-    square_sell = message.text;
+    shop.square_sell = message.text;
     get_floor(message);
 
 
@@ -107,8 +111,7 @@ def get_count_room(message):
     msg_id = msg.message_id;
 
 def get_parking(message):
-    global parking;
-    parking = message.text;
+    shop.parking = message.text;
     bot.send_message(message.chat.id, 'Укажите стоимость аренды ');
     bot.register_next_step_handler(message, get_rent);
 
@@ -141,20 +144,16 @@ def  get_second_floor(message):
     msg_id = msg.message_id;
 
 def get_rent(message):
-    global rent;
-    rent = message.text;
+    shop.rent = message.text;
     bot.send_message(message.chat.id, 'Приложите фото');
     bot.register_next_step_handler(message, get_photo);
 
 def get_photo(message):
-    global rent;
-    rent = message.text;
     bot.send_message(message.chat.id, 'Напишите краткий комментарий к заявке');
     bot.register_next_step_handler(message, get_comment);
 
 def get_comment(message):
-    global rent;
-    rent = message.text;
+    shop.comment = message.text;
     bot.send_message(message.chat.id, 'Отправлю вашу заявку на рассмотрение!');
     bot.send_message(message.chat.id, 'Приятного дня!');
     add(message);
@@ -192,22 +191,27 @@ def start(message):
         bot.send_message(message.chat.id, "Напишите количество парквочных мест");
         bot.register_next_step_handler(message, get_parking);
 
+    #elif message.text == '/bdsel':
+     #   bot.send_message(message.chat.id, "Введите Имя для просмотра записи БД");
+
     else:
         bot.send_message(message.chat.id, ' Привет! Я бот-помощник по открытию нового магазина!');
         bot.send_message(message.chat.id, ' Давайте заполним заявку на открытие магазина. Напишите /reg');
+        #bot.send_message(message.chat.id, ' Для просмотра содержимого БД напишите /bdsel');
 
-def add(message):
+def add(message):#Отправка в базу данных
     from init_add import Shop
-    #shop = Shop(name="Hello World!", tel=2)
-    #shop = Shop(address="addr")
-
-    init_add.add(shop, session);
-    bot.send_message(message.chat.id, ' Заявка отправлена в БД ');
-    get_question(message);
-
-
-session = init_add.init();
+    shop.chat_id = message.chat.id;
+    try:
+        init_add.add(shop, session);
+        bot.send_message(message.chat.id, ' Заявка отправлена в БД ');
+        #get_question(message);
+    except:
+        bot.send_message(message.chat.id, ' Ошибка записи в БД ');
 
 
+session = init_add.init(); #инициализация сессии к БД
 
-bot.polling(none_stop=True)
+
+
+bot.polling() #none_stop=True
