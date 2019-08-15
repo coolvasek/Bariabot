@@ -214,4 +214,4 @@ session = init_add.init(); #инициализация сессии к БД
 
 
 
-bot.polling() #none_stop=True
+bot.polling(none_stop=True) #none_stop=True
