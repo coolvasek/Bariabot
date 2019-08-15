@@ -1,6 +1,5 @@
 import sqlalchemy
 import telebot
-import sqlAlc
 import init_add
 from init_add import Shop
 
